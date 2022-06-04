@@ -167,3 +167,11 @@ You can check if the systemd timer is active by running `systemctl list-timers`.
 ## Credits
 
 This was inspired by the work of [@tdemin](<https://github.com/tdemin>) who created a rather [thorough blog post](<https://tdem.in/post/restic-with-systemd/>) detailing the steps to create the systemd service and timer for restic. I used the steps he shared, converted it to an ansible module and added a few modifications of my own. Thank you Timur!
+
+## Contributing
+
+Have an idea or feature you'd like to implement? Submit a PR or file an issue! :slightly_smiling_face:
+
+## License
+
+[MIT](<https://github.com/charltonstanley/ansible-role-restic/blob/master/LICENSE>)
