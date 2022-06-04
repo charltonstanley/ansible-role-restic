@@ -6,3 +6,18 @@ restic_service_account_group: svc-restic
 systemd_timer_schedule: "*-*-* 0:00:00" # midnight every night
 restic_service_account_home: "/home/{{ restic_service_account_name }}"
 systemd_instance_name: whole-system-backup
+exclude_list:
+ - /dev
+ - /proc
+ - /sys
+ - /tmp
+ - /run
+ - /mnt
+ - /media
+ - /lost+found
+ - /swapfile
+ - /cdrom
+ - /root
+
+include_list:
+ - /

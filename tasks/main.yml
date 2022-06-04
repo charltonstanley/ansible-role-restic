@@ -52,17 +52,18 @@
   ansible.builtin.file:
     dest: "{{ restic_service_account_home }}/{{ systemd_instance_name }}/{{ restic_key_id }}"
     state: touch
-    mode: '0600'
+    mode: '0400'
     owner: root
     group: root
 
 - name: create restic include and exclude files
-  ansible.builtin.copy:
-    src: "files/{{ item }}"
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
     dest: "{{ restic_service_account_home }}/{{ systemd_instance_name }}/{{ item }}"
     mode: '0400'
     owner: root
     group: root
   loop:
-    - include.files
-    - exclude.files
+    - include.file
+    - exclude.file
+    - restic.env

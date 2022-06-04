@@ -2,16 +2,17 @@
 
 ## Description
 
-The restic role automatically installs the [`restic`](https://restic.readthedocs.io/en/stable) application and configures a systemd service with a systemd timer to allow backups to run on a schedule.
+The restic ansible role automatically installs the [`restic`](https://restic.readthedocs.io/en/stable) application and configures a systemd service with a systemd timer to allow backups to run on a schedule. Currently only sftp is supported, but this could probably easily be modified to accomodate other protocols.
 
 Role tasks:
 
-* download and install `restic`
+* download and install restic
 * create a service acccount and primary group
 * create a systemd service and systemd timer
 * create any required directories
-* add directories to exclude by default from backups (i.e. `/proc`, `/dev`, etc.)
-* specify a list of directories to include by default
+* specify a list to exclude by default from backups (i.e. `/proc`, `/dev`, etc.)
+* specify a list of directories to ibackup
+* start the systemd timer
 
 ## Role Variables
 
@@ -95,6 +96,40 @@ FQDN of the remote server where the restic repo is stored.
 
 **Default**: `null`
 
+### exclude_list
+
+List of file/folder paths that will be excluded from backup.
+
+**Type**: list
+
+**Default**:
+  
+  ```yaml
+    - /dev
+    - /proc
+    - /sys
+    - /tmp
+    - /run
+    - /mnt
+    - /media
+    - /lost+found
+    - /swapfile
+    - /cdrom
+    - /root
+  ```
+
+### include_list
+
+List of file/folder paths that will be backed up.
+
+**Type**: list
+
+**Default**:
+  
+  ```yaml
+    - /
+  ```
+
 ## Usage
 
 ### Install Restic and Start the Systemd Timer
@@ -102,9 +137,10 @@ FQDN of the remote server where the restic repo is stored.
 ```yaml
 # playbook/group_vars/all.yml
 restic_key_id: 5c657874
-restic_repo_path: /home/{{ ssh_username }}/backups/project
 ssh_username: admin
+restic_repo_path: /home/{{ ssh_username }}/backups/project_name
 ssh_server_fqdn: server.host.xlocal
+systemd_instance_name: whole-system-backup
 
 # playbook/site.yml
 - hosts: all
@@ -120,6 +156,14 @@ ssh_server_fqdn: server.host.xlocal
 2. Make sure the permissions are correct on the private key.
 3. You will need to add a `known_hosts` file to `{{ restic_service_account_home }}/.ssh/` in order to trust the remote server's host key.
 
-### Restic repo password
+### Restic Repo Password
 
-The password for your repo needs to be saved to `{{ restic_service_account_home }}/{{ systemd_instance_name }}/{{ restic_key_id }}`. This file was created automatically with the correct permissions and just needs to edited with the repo password that matches the specified key id.
+The password for your repo needs to be saved to `{{ restic_service_account_home }}/{{ systemd_instance_name }}/{{ restic_key_id }}`. This file was created automatically with the correct permissions and just needs to be modified to include the repo password that matches the specified key id.
+
+### Systemd Timers
+
+You can check if the systemd timer is active by running `systemctl list-timers`.
+
+## Credits
+
+This was inspired by the work of [@tdemin](<https://github.com/tdemin>) who created a rather [thorough blog post](<https://tdem.in/post/restic-with-systemd/>) detailing the steps to create the systemd service and timer for restic. I used the steps he shared, converted it to an ansible module and added a few modifications of my own. Thank you Timur!
