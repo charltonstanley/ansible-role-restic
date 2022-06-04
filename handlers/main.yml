@@ -1,0 +1,6 @@
+- name: enable and start restic timer
+  ansible.builtin.systemd:
+    name: "restic@{{ systemd_instance_name }}.timer"
+    daemon_reload: true
+    enabled: true
+    state: started

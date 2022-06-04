@@ -1,0 +1,42 @@
+[Unit]
+Description=Restic backup on %H for the %i instance.
+After=syslog.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User={{ restic_service_account_name }}
+Group={{ restic_service_account_name }}
+ExecStart=/usr/bin/restic backup --exclude-file {{ restic_service_account_home }}/%i/exclude.files --files-from {{ restic_service_account_home }}/%i/include.files --verbose
+EnvironmentFile={{ restic_service_account_home }}/%i/%p.env
+AmbientCapabilities=CAP_DAC_READ_SEARCH
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+StartLimitInterval=30
+StartLimitBurst=3
+
+; Sandboxing
+ProtectSystem=strict
+ProtectHome=read-only
+RestrictNamespaces=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+PrivateTmp=true
+PrivateDevices=true
+ProtectClock=true
+ProtectControlGroups=true
+ProtectKernelTunables=true
+ProtectKernelLogs=true
+ProtectKernelModules=true
+LockPersonality=true
+RestrictSUIDSGID=true
+RemoveIPC=true
+RestrictRealtime=true
+SystemCallFilter=@system-service
+SystemCallArchitectures=native
+MemoryDenyWriteExecute=true
+ReadWriteDirectories={{ restic_service_account_home}}/.cache
+
+[Install]
+WantedBy=multi-user.target
+
