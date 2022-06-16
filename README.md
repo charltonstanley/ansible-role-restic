@@ -24,6 +24,8 @@ Name of the restic package for your distro.
 
 **Default**: `restic`
 
+**Required**: true
+
 ### restic_service_account_name
 
 Service account name that will be used to run the restic service.
@@ -31,6 +33,8 @@ Service account name that will be used to run the restic service.
 **Type**: string
 
 **Default**: `svc-restic`
+
+**Required**: true
 
 ### restic_service_account_group
 
@@ -40,13 +44,17 @@ Primary group of the service account that will be used to run the restic service
 
 **Default**: `svc-restic`
 
-### systemd_timer_schedule
+**Required**: true
+
+### systemd_restic_timer_schedule
 
 The desired systemd timer schedule. See <https://silentlad.com/systemd-timers-oncalendar-(cron)-format-explained> for a quick explanation with examples.
 
 **Type**: string
 
 **Default**: `*-*-* 0:00:00` (midnight every night)
+
+**Required**: true
 
 ### restic_service_account_home
 
@@ -56,6 +64,8 @@ The desired home directory for the service account that will be used to run the 
 
 **Default**: `/home/{{ restic_service_account_name }}`
 
+**Required**: true
+
 ### systemd_instance_name
 
 The name of the desired systemd service instance name for restic. For example, `restic@work.service` where `work` is the instance name, which would backup all the files and folders used for my job. The default is to backup the whole system; see `includes.files`.
@@ -63,6 +73,8 @@ The name of the desired systemd service instance name for restic. For example, `
 **Type**: string
 
 **Default**: `whole-system-backup`
+
+**Required**: true
 
 ### restic_key_id
 
@@ -72,6 +84,8 @@ The key id of the password to access the restic vault. See <https://restic.readt
 
 **Default**: `null`
 
+**Required**: true
+
 ### restic_repo_path
 
 The full path to the repo on the remote server. For example, `/home/username/backups/project`.
@@ -79,6 +93,8 @@ The full path to the repo on the remote server. For example, `/home/username/bac
 **Type**: string
 
 **Default**: `null`
+
+**Required**: true
 
 ### ssh_username
 
@@ -88,6 +104,8 @@ Username used to connect to the remote server via SSH where the restic repo is s
 
 **Default**: `null`
 
+**Required**: true
+
 ### ssh_server_fqdn
 
 FQDN of the remote server where the restic repo is stored.
@@ -95,6 +113,8 @@ FQDN of the remote server where the restic repo is stored.
 **Type**: string
 
 **Default**: `null`
+
+**Required**: true
 
 ### exclude_list
 
@@ -118,6 +138,8 @@ List of file/folder paths that will be excluded from backup.
     - /root
   ```
 
+**Required**: true
+
 ### include_list
 
 List of file/folder paths that will be backed up.
@@ -130,6 +152,18 @@ List of file/folder paths that will be backed up.
     - /
   ```
 
+**Required**: true
+
+### enable_desktop_notifications
+
+Enable desktop notifications for if/when the service fails for whatever reason. Due to the limitations of the system process being able to interact with the user space and display a notification, this had to be setup as a new service (`systemd-desktop-notifier@.service`) and accompanying timer. This new service is running within the user space, allowing desktop notifications to work properly. This optional but highly recommended. Without this, how will you know if your backups are working or not without manually verifying?
+
+**Type**: bool
+
+**Default**: false
+
+**Required**: false
+
 ## Usage
 
 ### Install Restic and Start the Systemd Timer
@@ -141,6 +175,7 @@ ssh_username: admin
 restic_repo_path: /home/{{ ssh_username }}/backups/project_name
 ssh_server_fqdn: server.host.xlocal
 systemd_instance_name: whole-system-backup
+enable_desktop_notifications: true # optional, but highly recommended.
 
 # playbook/site.yml
 - hosts: all
@@ -167,6 +202,10 @@ You can check if the systemd timer is active by running `systemctl list-timers`.
 ## Credits
 
 This was inspired by the work of [@tdemin](<https://github.com/tdemin>) who created a rather [thorough blog post](<https://tdem.in/post/restic-with-systemd/>) detailing the steps to create the systemd service and timer for restic. I used the steps he shared, converted it to an ansible module and added a few modifications of my own. Thank you Timur!
+
+Additionally, credit goes to [@papanito](<https://github.com/papanito>) whose blog post (<https://wyssmann.com/blog/2021/07/notifications-for-failing-systemd-services/>) led me to a script he created, which I used and modified slightly to help me create my own convoluded desktop notification process.
+
+I'd like to also thank the folks over at [SmallStep](<https://smallstep.com>) for publishing a neat [systemd service file](<https://github.com/smallstep/certificates/blob/master/systemd/step-ca.service>), containing all the config required to properly harden a service.
 
 ## Contributing
 

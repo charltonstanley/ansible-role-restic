@@ -4,3 +4,12 @@
     daemon_reload: true
     enabled: true
     state: started
+
+- name: enable and start systemd-desktop-notifier timer
+  become: false
+  ansible.builtin.systemd:
+    name: "systemd-desktop-notifier@restic@{{ systemd_instance_name }}.timer"
+    daemon_reload: true
+    enabled: true
+    state: started
+    scope: user

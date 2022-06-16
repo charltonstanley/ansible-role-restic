@@ -1,0 +1,22 @@
+[Unit]
+Description=Desktop Notification of %i
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/systemd-desktop-notifier.sh -s %i
+
+; Sandboxing
+ProtectSystem=strict
+ProtectHome=read-only
+RestrictNamespaces=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+PrivateTmp=true
+ProtectControlGroups=true
+ProtectKernelTunables=true
+LockPersonality=true
+RestrictSUIDSGID=true
+RemoveIPC=true
+RestrictRealtime=true
+SystemCallFilter=@system-service
+SystemCallArchitectures=native
+MemoryDenyWriteExecute=true

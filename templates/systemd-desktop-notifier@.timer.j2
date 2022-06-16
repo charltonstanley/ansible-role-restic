@@ -1,0 +1,14 @@
+[Unit]
+Description=Desktop Notifier timer for %i
+
+[Timer]
+Persistent=true
+
+; Run the timer unit every hour.
+OnCalendar={{ systemd_desktop_notifier_timer_schedule }}
+
+; Always run the timer on time.
+AccuracySec=1us
+
+[Install]
+WantedBy=timers.target

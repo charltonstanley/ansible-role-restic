@@ -2,7 +2,7 @@
 Description=Run Restic On a Schedule
 
 [Timer]
-OnCalendar={{ systemd_timer_schedule }}
+OnCalendar={{ systemd_restic_timer_schedule }}
 
 [Install]
 WantedBy=timers.target

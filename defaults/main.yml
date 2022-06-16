@@ -3,9 +3,10 @@
 restic_package_name: restic
 restic_service_account_name: svc-restic
 restic_service_account_group: svc-restic
-systemd_timer_schedule: "*-*-* 0:00:00" # midnight every night
+systemd_restic_timer_schedule: "*-*-* 0:00:00" # midnight every night
 restic_service_account_home: "/home/{{ restic_service_account_name }}"
 systemd_instance_name: whole-system-backup
+systemd_desktop_notifier_timer_schedule: "*-*-* *:00:00"
 exclude_list:
  - /dev
  - /proc
